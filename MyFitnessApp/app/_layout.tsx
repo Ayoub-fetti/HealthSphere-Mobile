@@ -17,6 +17,10 @@ export default function RootLayout() {
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+        {/* Fitness Screens */}
+        <Stack.Screen name="home" options={{ title: 'My Fitness App' }} />
+        <Stack.Screen name="add-workout" options={{ title: 'Add Workout' }} />
+        <Stack.Screen name="workout-details" options={{ title: 'Workout Details' }} />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
