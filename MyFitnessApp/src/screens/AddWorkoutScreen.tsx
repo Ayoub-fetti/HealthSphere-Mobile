@@ -1,17 +1,17 @@
 import React from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
 type AddWorkoutScreenProps = {
-  navigation: NativeStackNavigationProp<RootStackParamList, 'AddWorkout'>;
+  navigation: StackNavigationProp<RootStackParamList, 'AddWorkout'>;
 };
 
 export default function AddWorkoutScreen({ navigation }: AddWorkoutScreenProps) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>➕ Add Workout Screen</Text>
-      <Button title="Go Back" onPress={() => navigation.goBack()} />
+      <Button title="← Go Back" onPress={() => navigation.goBack()} />
     </View>
   );
 }
