@@ -13,6 +13,7 @@ import {
 import { Picker } from '@react-native-picker/picker';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import { useWorkouts } from '../context/WorkoutContext';
 
 type AddWorkoutScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'AddWorkout'>;
@@ -31,13 +32,25 @@ type FormErrors = Partial<Record<keyof FormFields, string>>;
 const WORKOUT_TYPES = ['Strength', 'Cardio', 'HIIT', 'Flexibility', 'Sports', 'Other'];
 const INTENSITIES = ['Easy', 'Moderate', 'Hard', 'Max'];
 
+const CATEGORY_EMOJI: Record<string, string> = {
+  Strength: '💪 Strength',
+  Cardio: '🏃 Cardio',
+  HIIT: '🔥 HIIT',
+  Flexibility: '🧘 Flexibility',
+  Sports: '⚽ Sports',
+  Other: '🏅 Other',
+};
+
 export default function AddWorkoutScreen({ navigation }: AddWorkoutScreenProps) {
+  // ✅ Use context
+  const { addWorkout } = useWorkouts();
+
   const [form, setForm] = useState<FormFields>({
     title: '',
     type: WORKOUT_TYPES[0],
     duration: '',
     intensity: INTENSITIES[1],
-    date: new Date().toISOString().split('T')[0], // YYYY-MM-DD
+    date: new Date().toISOString().split('T')[0],
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -46,7 +59,6 @@ export default function AddWorkoutScreen({ navigation }: AddWorkoutScreenProps) 
 
   const updateField = (field: keyof FormFields, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
-    // Clear error on change
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
   };
 
@@ -55,9 +67,7 @@ export default function AddWorkoutScreen({ navigation }: AddWorkoutScreenProps) 
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
 
-    if (!form.title.trim()) {
-      newErrors.title = 'Workout name is required.';
-    }
+    if (!form.title.trim()) newErrors.title = 'Workout name is required.';
 
     if (!form.duration.trim()) {
       newErrors.duration = 'Duration is required.';
@@ -81,16 +91,21 @@ export default function AddWorkoutScreen({ navigation }: AddWorkoutScreenProps) 
   const handleSubmit = () => {
     if (!validate()) return;
 
-    // Simulate adding workout → navigate back to Home
+    // ✅ Build a Workout object and add it via context
+    const newWorkout = {
+      id: Date.now().toString(),
+      title: form.title.trim(),
+      duration: `${form.duration} min`,
+      category: CATEGORY_EMOJI[form.type] ?? form.type,
+      date: form.date,
+    };
+
+    addWorkout(newWorkout);
+
     Alert.alert(
       '✅ Workout Added!',
       `"${form.title}" has been saved successfully.`,
-      [
-        {
-          text: 'View Home',
-          onPress: () => navigation.navigate('Home'),
-        },
-      ]
+      [{ text: 'View Home', onPress: () => navigation.navigate('Home') }]
     );
   };
 
@@ -162,7 +177,7 @@ export default function AddWorkoutScreen({ navigation }: AddWorkoutScreenProps) 
           {errors.duration && <Text style={styles.errorText}>{errors.duration}</Text>}
         </View>
 
-        {/* ── Intensity (Button Group) ── */}
+        {/* ── Intensity ── */}
         <View style={styles.fieldGroup}>
           <Text style={styles.label}>Intensity *</Text>
           <View style={styles.intensityRow}>
@@ -208,7 +223,11 @@ export default function AddWorkoutScreen({ navigation }: AddWorkoutScreenProps) 
           <Text style={styles.submitText}>Save Workout ✓</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.cancelBtn} onPress={() => navigation.goBack()} activeOpacity={0.7}>
+        <TouchableOpacity
+          style={styles.cancelBtn}
+          onPress={() => navigation.goBack()}
+          activeOpacity={0.7}
+        >
           <Text style={styles.cancelText}>Cancel</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -216,18 +235,15 @@ export default function AddWorkoutScreen({ navigation }: AddWorkoutScreenProps) 
   );
 }
 
+// ...existing code... (styles unchanged)
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F4F8FB' },
   scrollContent: { padding: 20, paddingBottom: 48 },
-
   header: { marginBottom: 24 },
   headerTitle: { fontSize: 26, fontWeight: '800', color: '#11181C' },
   headerSubtitle: { fontSize: 14, color: '#687076', marginTop: 4 },
-
   fieldGroup: { marginBottom: 20 },
   label: { fontSize: 14, fontWeight: '600', color: '#11181C', marginBottom: 8 },
-
-  // Input
   input: {
     backgroundColor: '#fff',
     borderRadius: 12,
@@ -248,8 +264,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   unitText: { color: '#fff', fontWeight: '700', fontSize: 14 },
-
-  // Picker
   pickerWrapper: {
     backgroundColor: '#fff',
     borderRadius: 12,
@@ -258,8 +272,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   picker: { color: '#11181C' },
-
-  // Intensity
   intensityRow: { flexDirection: 'row', gap: 8 },
   intensityBtn: {
     flex: 1,
@@ -273,11 +285,7 @@ const styles = StyleSheet.create({
   intensityBtnActive: { backgroundColor: '#0a7ea4', borderColor: '#0a7ea4' },
   intensityText: { fontSize: 13, fontWeight: '600', color: '#687076' },
   intensityTextActive: { color: '#fff' },
-
-  // Error
   errorText: { color: '#E53935', fontSize: 12, marginTop: 4 },
-
-  // Buttons
   submitBtn: {
     backgroundColor: '#0a7ea4',
     borderRadius: 14,
@@ -291,10 +299,6 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   submitText: { color: '#fff', fontSize: 16, fontWeight: '800' },
-  cancelBtn: {
-    marginTop: 12,
-    alignItems: 'center',
-    paddingVertical: 12,
-  },
+  cancelBtn: { marginTop: 12, alignItems: 'center', paddingVertical: 12 },
   cancelText: { color: '#687076', fontSize: 15, fontWeight: '600' },
 });

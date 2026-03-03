@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export type Workout = {
   id: string;
@@ -12,11 +12,29 @@ export type Workout = {
 type WorkoutItemProps = {
   workout: Workout;
   onPress: (id: string) => void;
+  onDelete?: (id: string) => void; // ✅ optional delete callback
 };
 
-export default function WorkoutItem({ workout, onPress }: WorkoutItemProps) {
+export default function WorkoutItem({ workout, onPress, onDelete }: WorkoutItemProps) {
+  const handleLongPress = () => {
+    if (!onDelete) return;
+    Alert.alert(
+      'Delete Workout',
+      `Are you sure you want to delete "${workout.title}"?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: () => onDelete(workout.id) },
+      ]
+    );
+  };
+
   return (
-    <TouchableOpacity style={styles.card} onPress={() => onPress(workout.id)} activeOpacity={0.8}>
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => onPress(workout.id)}
+      onLongPress={handleLongPress}
+      activeOpacity={0.8}
+    >
       <View style={styles.iconContainer}>
         <Text style={styles.icon}>🏋️</Text>
       </View>
@@ -32,6 +50,11 @@ export default function WorkoutItem({ workout, onPress }: WorkoutItemProps) {
           </View>
         </View>
       </View>
+      {onDelete && (
+        <TouchableOpacity onPress={handleLongPress} style={styles.deleteBtn}>
+          <Text style={styles.deleteIcon}>🗑️</Text>
+        </TouchableOpacity>
+      )}
     </TouchableOpacity>
   );
 }
@@ -73,4 +96,6 @@ const styles = StyleSheet.create({
   },
   tagCategory: { backgroundColor: '#FFF3E0' },
   tagText: { fontSize: 12, color: '#0a7ea4', fontWeight: '600' },
+  deleteBtn: { padding: 4 },
+  deleteIcon: { fontSize: 18 },
 });

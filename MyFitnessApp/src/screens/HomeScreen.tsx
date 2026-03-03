@@ -10,13 +10,28 @@ import {
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import WorkoutItem from '../components/WorkoutItem';
-import { MOCK_WORKOUTS } from '../constants/mockWorkouts';
+import { useWorkouts } from '../context/WorkoutContext';
 
 type HomeScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'Home'>;
 };
 
 export default function HomeScreen({ navigation }: HomeScreenProps) {
+  // ✅ Use context instead of MOCK_WORKOUTS
+  const { workouts, deleteWorkout } = useWorkouts();
+
+  // Compute total duration in minutes
+  const totalMinutes = workouts.reduce((sum, w) => {
+    const match = w.duration.match(/\d+/);
+    return sum + (match ? parseInt(match[0]) : 0);
+  }, 0);
+  const totalTime =
+    totalMinutes >= 60
+      ? `${Math.floor(totalMinutes / 60)}h ${totalMinutes % 60}m`
+      : `${totalMinutes}m`;
+
+  const categories = new Set(workouts.map((w) => w.category)).size;
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#F4F8FB" />
@@ -25,7 +40,9 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
       <View style={styles.header}>
         <View>
           <Text style={styles.greeting}>Hello, Athlete 👋</Text>
-          <Text style={styles.subtitle}>You have {MOCK_WORKOUTS.length} workouts logged</Text>
+          <Text style={styles.subtitle}>
+            You have {workouts.length} workouts logged
+          </Text>
         </View>
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>A</Text>
@@ -35,17 +52,17 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
       {/* Stats Banner */}
       <View style={styles.statsBanner}>
         <View style={styles.statItem}>
-          <Text style={styles.statValue}>6</Text>
-          <Text style={styles.statLabel}>This Week</Text>
+          <Text style={styles.statValue}>{workouts.length}</Text>
+          <Text style={styles.statLabel}>Total</Text>
         </View>
         <View style={styles.statDivider} />
         <View style={styles.statItem}>
-          <Text style={styles.statValue}>3h 50m</Text>
+          <Text style={styles.statValue}>{totalTime}</Text>
           <Text style={styles.statLabel}>Total Time</Text>
         </View>
         <View style={styles.statDivider} />
         <View style={styles.statItem}>
-          <Text style={styles.statValue}>4</Text>
+          <Text style={styles.statValue}>{categories}</Text>
           <Text style={styles.statLabel}>Categories</Text>
         </View>
       </View>
@@ -53,16 +70,22 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
       {/* List */}
       <Text style={styles.sectionTitle}>Recent Workouts</Text>
       <FlatList
-        data={MOCK_WORKOUTS}
+        data={workouts}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) =>
+        renderItem={({ item }) => (
           <WorkoutItem
             workout={item}
-            onPress={(id) => navigation.navigate('WorkoutDetails', { workoutId: id })}
+            onPress={(id) =>
+              navigation.navigate('WorkoutDetails', { workoutId: id })
+            }
+            onDelete={deleteWorkout}
           />
-        }
+        )}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>No workouts yet. Add one! 💪</Text>
+        }
       />
 
       {/* Floating Action Button */}
@@ -120,6 +143,12 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   listContent: { paddingBottom: 100 },
+  emptyText: {
+    textAlign: 'center',
+    marginTop: 60,
+    fontSize: 16,
+    color: '#687076',
+  },
   fab: {
     position: 'absolute',
     bottom: 28,
