@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  ActivityIndicator,
   FlatList,
   StatusBar,
   StyleSheet,
@@ -17,8 +18,7 @@ type HomeScreenProps = {
 };
 
 export default function HomeScreen({ navigation }: HomeScreenProps) {
-  // ✅ Use context instead of MOCK_WORKOUTS
-  const { workouts, deleteWorkout } = useWorkouts();
+  const { workouts, deleteWorkout, isLoading, storageError } = useWorkouts();
 
   // Compute total duration in minutes
   const totalMinutes = workouts.reduce((sum, w) => {
@@ -31,6 +31,31 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
       : `${totalMinutes}m`;
 
   const categories = new Set(workouts.map((w) => w.category)).size;
+
+  // ─── Loading State ────────────────────────────────────────────────────────
+
+  if (isLoading) {
+    return (
+      <View style={styles.centeredState}>
+        <ActivityIndicator size="large" color="#0a7ea4" />
+        <Text style={styles.loadingText}>Loading your workouts…</Text>
+      </View>
+    );
+  }
+
+  // ─── Error State ──────────────────────────────────────────────────────────
+
+  if (storageError) {
+    return (
+      <View style={styles.centeredState}>
+        <Text style={styles.errorIcon}>⚠️</Text>
+        <Text style={styles.errorTitle}>Something went wrong</Text>
+        <Text style={styles.errorMessage}>{storageError}</Text>
+      </View>
+    );
+  }
+
+  // ─── Main UI ──────────────────────────────────────────────────────────────
 
   return (
     <View style={styles.container}>
@@ -101,7 +126,20 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 }
 
 const styles = StyleSheet.create({
+  // ...existing code...
   container: { flex: 1, backgroundColor: '#F4F8FB' },
+  centeredState: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+    backgroundColor: '#F4F8FB',
+    padding: 24,
+  },
+  loadingText: { fontSize: 15, color: '#687076', marginTop: 8 },
+  errorIcon: { fontSize: 48 },
+  errorTitle: { fontSize: 18, fontWeight: '700', color: '#11181C' },
+  errorMessage: { fontSize: 14, color: '#E53935', textAlign: 'center' },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
