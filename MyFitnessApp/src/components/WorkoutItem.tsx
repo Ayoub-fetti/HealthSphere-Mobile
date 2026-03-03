@@ -7,12 +7,15 @@ export type Workout = {
   duration: string;
   category: string;
   date: string;
+  intensity?: string;   
+  notes?: string;       
 };
 
+// ...existing code...
 type WorkoutItemProps = {
   workout: Workout;
   onPress: (id: string) => void;
-  onDelete?: (id: string) => void; // ✅ optional delete callback
+  onDelete?: (id: string) => void;
 };
 
 export default function WorkoutItem({ workout, onPress, onDelete }: WorkoutItemProps) {
@@ -59,6 +62,7 @@ export default function WorkoutItem({ workout, onPress, onDelete }: WorkoutItemP
   );
 }
 
+// ...existing code...
 const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
