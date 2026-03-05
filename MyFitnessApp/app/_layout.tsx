@@ -1,11 +1,13 @@
-import { NavigationContainer } from '@react-navigation/native';
-import AppNavigator from '@/src/navigation/AppNavigator';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Slot } from 'expo-router';
 import { WorkoutProvider } from '@/src/context/WorkoutContext';
 
 export default function RootLayout() {
   return (
-    <WorkoutProvider>
-      <AppNavigator />
-    </WorkoutProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <WorkoutProvider>
+        <Slot />
+      </WorkoutProvider>
+    </GestureHandlerRootView>
   );
 }
