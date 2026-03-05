@@ -54,14 +54,14 @@ Goal: Fetch real data from an external source.
 
 Goal: Centralize Exercise and Favorite data.
 
-    [ ] Create src/context/ExerciseContext.tsx ⚠️ NOT DONE
+    [ ] Create src/context/ExerciseContext.tsx ✅
         (WorkoutContext exists but covers only workouts — do not modify it for exercises.)
         State: exercises array + favorites (array of exercise IDs).
 
-    [ ] Implement Reducer ⚠️ NOT DONE
+    [ ] Implement Reducer ✅
         Use useReducer with actions: FETCH_START | SET_EXERCISES | TOGGLE_FAVORITE
 
-    [ ] Persistence ⚠️ NOT DONE
+    [ ] Persistence ✅
         Update src/storage/workoutStorage.ts to add saveFavorites / getFavorites
         using a separate AsyncStorage key.
 
