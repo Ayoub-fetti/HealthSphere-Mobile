@@ -1,6 +1,4 @@
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Drawer } from "expo-router/drawer";
-import { Colors } from "@/constants/theme";
 
 export default function DrawerLayout() {
   return (

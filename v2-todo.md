@@ -9,28 +9,28 @@ Since you are using Expo Router (app directory), we need to ensure the "Navigati
     [x] Install Missing Navigation ✅
         @react-navigation/drawer and @react-native-community/netinfo are already in package.json.
 
-    [ ] Fix app/_layout.tsx ⚠️ CONFLICT
+    [ ] Fix app/_layout.tsx ✅
         Currently uses NavigationContainer + AppNavigator (stack-based).
         Replace with GestureHandlerRootView + Expo Router <Drawer> layout.
         Remove the NavigationContainer wrapper — Expo Router manages its own navigation.
         Keep WorkoutProvider wrapping the Drawer.
 
-    [ ] Restructure app/ to match the suggested navigation structure:
+    [ ] Restructure app/ to match the suggested navigation structure: ✅
         Create app/(drawer)/_layout.tsx  → Drawer root
         Move app/(tabs)/ inside app/(drawer)/(tabs)/
 
-    [ ] Setup 3 Tabs in app/(drawer)/(tabs)/_layout.tsx ⚠️ CONFLICT
+    [ ] Setup 3 Tabs in app/(drawer)/(tabs)/_layout.tsx ✅
         Currently only has 2 tabs: Home + Explore (both are Expo template screens).
         Replace with:
             🏠 index.tsx     → Dashboard
             💪 exercises.tsx → Exercise Catalog (new)
             📊 history.tsx   → History (port logic from src/screens/HomeScreen.tsx)
 
-    [ ] Add Drawer-only screens:
+    [ ] Add Drawer-only screens: ✅
         app/(drawer)/profile.tsx   (Drawer item)
         app/(drawer)/settings.tsx  (Drawer item)
 
-    [ ] Map src/ screens to app/ ⚠️ NOT DONE
+    [ ] Map src/ screens to app/ ✅
         Reference or move AddWorkoutScreen and WorkoutDetailsScreen into
         app/(drawer)/ so they are reachable via Expo Router links/navigation.
 
@@ -38,16 +38,16 @@ Since you are using Expo Router (app directory), we need to ensure the "Navigati
 
 Goal: Fetch real data from an external source.
 
-    [ ] Choose API ⚠️ NOT DONE
+    [ ] Choose API ✅
         Recommended: API Ninjas Exercises (free, no billing required).
         Alternative: ExerciseDB (RapidAPI).
 
-    [ ] Create src/services/apiService.ts ⚠️ NOT DONE (folder is empty)
+    [ ] Create src/services/apiService.ts ✅
         Implement fetchExercises(muscle?: string) function.
         Use fetch with AbortController timeout (or axios with timeout option).
         Return a typed ApiResponse<Exercise[]> object.
 
-    [ ] Add Error Handling ⚠️ NOT DONE
+    [ ] Add Error Handling ✅
         Standard response shape: { data: T | null, loading: boolean, error: string | null }
 
 🧠 3. Global State (src/context/)
